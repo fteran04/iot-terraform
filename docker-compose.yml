@@ -1,0 +1,97 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: mi_usuario
+      POSTGRES_PASSWORD: mi_password
+      POSTGRES_DB: tareas_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mi_usuario"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  api1:
+    environment:
+    - INIT_DB=true
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/tareas"]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+  
+  api2:
+    environment:
+      - INIT_DB=false
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/tareas"]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+
+  producer:
+    build: ./producer
+    depends_on:
+      api1:
+        condition: service_healthy
+      api2:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_server
+    ports:
+      - "5672:5672" # RabbitMQ port
+      - "15672:15672" # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      db:
+        condition: service_healthy
+
+  lb:
+    image: haproxy:latest
+    container_name: load_balancer
+    ports:
+      - "8000:80"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - api1
+      - api2
+
+volumes:
+  postgres_data:
