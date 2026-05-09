@@ -1,86 +1,125 @@
-# -------- VPC --------
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16" # red privada principal
+# ─── PostgreSQL EC2 ──────────────────────────────────────────────────────────
+resource "aws_instance" "postgres" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.postgres.id]
 
-  tags = {
-    Name = "mi-vpc"
-  }
+  user_data = templatefile("${path.module}/scripts/install_postgres.sh", {
+    db_user     = var.db_user
+    db_password = var.db_password
+    db_name     = var.db_name
+  })
+
+  tags = { Name = "postgres-server" }
 }
 
-# -------- Internet Gateway --------
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id # conecta la VPC a internet
+# ─── RabbitMQ EC2 ────────────────────────────────────────────────────────────
+resource "aws_instance" "rabbitmq" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.rabbitmq.id]
 
-  tags = {
-    Name = "mi-gw"
-  }
+  user_data = templatefile("${path.module}/scripts/install_rabbitmq.sh", {
+    rabbitmq_user     = var.rabbitmq_user
+    rabbitmq_password = var.rabbitmq_password
+  })
+
+  tags = { Name = "rabbitmq-server" }
 }
 
-# -------- Subnet pública --------
-resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24" # segmento de la red
-  map_public_ip_on_launch = true          # IP pública automática
+# ─── API 1 EC2 ───────────────────────────────────────────────────────────────
+resource "aws_instance" "api1" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.api.id]
 
-  tags = {
-    Name = "mi-subnet-publica"
-  }
+  user_data = templatefile("${path.module}/scripts/install_api.sh", {
+    dockerhub_username = var.dockerhub_username
+    db_host            = aws_instance.postgres.private_ip
+    db_user            = var.db_user
+    db_password        = var.db_password
+    db_name            = var.db_name
+    rabbitmq_host      = aws_instance.rabbitmq.private_ip
+    rabbitmq_user      = var.rabbitmq_user
+    rabbitmq_password  = var.rabbitmq_password
+    init_db            = "true"
+  })
+
+  tags = { Name = "api1-server" }
 }
 
-# -------- Tabla de rutas --------
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
+# ─── API 2 EC2 ───────────────────────────────────────────────────────────────
+resource "aws_instance" "api2" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.api.id]
 
-  route {
-    cidr_block = "0.0.0.0/0"              # todo el tráfico
-    gateway_id = aws_internet_gateway.gw.id # sale por internet
-  }
+  user_data = templatefile("${path.module}/scripts/install_api.sh", {
+    dockerhub_username = var.dockerhub_username
+    db_host            = aws_instance.postgres.private_ip
+    db_user            = var.db_user
+    db_password        = var.db_password
+    db_name            = var.db_name
+    rabbitmq_host      = aws_instance.rabbitmq.private_ip
+    rabbitmq_user      = var.rabbitmq_user
+    rabbitmq_password  = var.rabbitmq_password
+    init_db            = "false"
+  })
+
+  tags = { Name = "api2-server" }
 }
 
-# Asociar subnet a la tabla de rutas
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
+# ─── Worker EC2 ──────────────────────────────────────────────────────────────
+resource "aws_instance" "worker" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.worker.id]
+
+  user_data = templatefile("${path.module}/scripts/install_worker.sh", {
+    dockerhub_username = var.dockerhub_username
+    db_host            = aws_instance.postgres.private_ip
+    db_user            = var.db_user
+    db_password        = var.db_password
+    db_name            = var.db_name
+    rabbitmq_host      = aws_instance.rabbitmq.private_ip
+    rabbitmq_user      = var.rabbitmq_user
+    rabbitmq_password  = var.rabbitmq_password
+  })
+
+  tags = { Name = "worker-server" }
 }
 
-# -------- Security Group --------
-resource "aws_security_group" "ssh" {
-  name   = "permitir-ssh"
-  vpc_id = aws_vpc.main.id
+# ─── Producer EC2 ────────────────────────────────────────────────────────────
+resource "aws_instance" "producer" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.producer.id]
 
-  ingress {
-    from_port   = 22      # SSH
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # luego restringimos
-  }
+  user_data = templatefile("${path.module}/scripts/install_producer.sh", {
+    dockerhub_username = var.dockerhub_username
+    lb_host            = aws_instance.loadbalancer.public_ip
+  })
 
-  ingress {
-    from_port   = 8000    # tu API
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0       # salida libre
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  tags = { Name = "producer-server" }
 }
 
-# -------- EC2 --------
-resource "aws_instance" "api" {
-  ami           = "ami-08c40ec9ead489470" # Ubuntu (us-east-1)
-  instance_type = "t2.micro"
+# ─── Load Balancer EC2 (HAProxy) ─────────────────────────────────────────────
+resource "aws_instance" "loadbalancer" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.lb.id]
 
-  subnet_id              = aws_subnet.public.id
-  vpc_security_group_ids = [aws_security_group.ssh.id]
+  user_data = templatefile("${path.module}/scripts/install_loadbalancer.sh", {
+    api1_private_ip = aws_instance.api1.private_ip
+    api2_private_ip = aws_instance.api2.private_ip
+  })
 
-  key_name = "mi-clave" # clave SSH creada en AWS
-
-  tags = {
-    Name = "mi-api"
-  }
+  tags = { Name = "loadbalancer-server" }
 }

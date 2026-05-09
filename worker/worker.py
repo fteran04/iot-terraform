@@ -37,7 +37,7 @@ def conectar_rabbit():
 
             connection = pika.BlockingConnection(
                 pika.ConnectionParameters(
-                    host='rabbitmq',
+                    host=os.getenv("RABBITMQ_HOST", "rabbitmq"),
                     credentials=credentials
                 )
             )

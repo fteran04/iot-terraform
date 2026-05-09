@@ -1,7 +1,8 @@
 import requests
 import time
+import os
 
-BASE_URL = "http://lb"
+BASE_URL = os.getenv("BASE_URL", "http://lb")
 
 def esperar_api():
     print("Esperando a que la API esté disponible...")

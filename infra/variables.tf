@@ -1,23 +1,60 @@
-variable "vpc_id" {
-  default = "vpc-02b73f22d01a213cf"
-}
-
-variable "ami_id" {
-  default = "ami-02dfbd4ff395f2a1b"
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  type        = string
+  default     = "us-east-1"
 }
 
 variable "instance_type" {
-  default = "t3.micro"
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "ami_id" {
+  description = "Ubuntu 24.04 LTS AMI ID (us-east-1)"
+  type        = string
+  default = "ami-0f9fc25dd2506cf6d"
 }
 
 variable "key_name" {
-  default = "mi-clave"
+  default = "vockey"
+  description = "Name of the EC2 key pair for SSH access"
+  type        = string
 }
 
-variable "subnets" {
-  default = [
-    "subnet-03e326867a44355f7",
-    "subnet-0bebc93e2815a0f6d",
-    "subnet-0ea41e3bb2080dd8b"
-  ]
+variable "dockerhub_username" {
+  description = "Docker Hub username where images are pushed"
+  type        = string
+}
+
+variable "db_user" {
+  description = "PostgreSQL username"
+  type        = string
+  default     = "mi_usuario"
+}
+
+variable "db_password" {
+  description = "PostgreSQL password"
+  type        = string
+  sensitive   = true
+  default     = "mi_password"
+}
+
+variable "db_name" {
+  description = "PostgreSQL database name"
+  type        = string
+  default     = "tareas_db"
+}
+
+variable "rabbitmq_user" {
+  description = "RabbitMQ username"
+  type        = string
+  default     = "admin"
+}
+
+variable "rabbitmq_password" {
+  description = "RabbitMQ password"
+  type        = string
+  sensitive   = true
+  default     = "admin"
 }

@@ -1,12 +1,13 @@
 import pika
 import json
+import os
 
 def publicar_tarea(tarea_id: int):
     credentials = pika.PlainCredentials("admin", "admin")
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
-            host="rabbitmq",
+            host=os.getenv("RABBITMQ_HOST", "rabbitmq"),
             credentials=credentials
         )
     )

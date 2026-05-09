@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y curl \
 WORKDIR /app
 
 # Copia e instala dependencias primero
-COPY requirements.txt .
+COPY producer/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia el código
-COPY producer.py .
+COPY producer/producer.py .
 
 # Comando para correr el producer
 CMD ["python", "producer.py"]
