@@ -10,6 +10,18 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+  default     = "vpc-02b73f22d01a213cf"  
+}
+
+variable "subnet_id" {
+  description = "Subnet ID"
+  type        = string
+  default     = "subnet-03e326867a44355f7"  
+}
+
 variable "ami_id" {
   description = "Ubuntu 24.04 LTS AMI ID (us-east-1)"
   type        = string
@@ -23,6 +35,7 @@ variable "key_name" {
 }
 
 variable "dockerhub_username" {
+  default     = "federicoteran04"
   description = "Docker Hub username where images are pushed"
   type        = string
 }

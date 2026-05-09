@@ -3,6 +3,7 @@ resource "aws_instance" "postgres" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.postgres.id]
 
   user_data = templatefile("${path.module}/scripts/install_postgres.sh", {
@@ -19,6 +20,7 @@ resource "aws_instance" "rabbitmq" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.rabbitmq.id]
 
   user_data = templatefile("${path.module}/scripts/install_rabbitmq.sh", {
@@ -34,6 +36,7 @@ resource "aws_instance" "api1" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.api.id]
 
   user_data = templatefile("${path.module}/scripts/install_api.sh", {
@@ -56,6 +59,7 @@ resource "aws_instance" "api2" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.api.id]
 
   user_data = templatefile("${path.module}/scripts/install_api.sh", {
@@ -78,6 +82,7 @@ resource "aws_instance" "worker" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.worker.id]
 
   user_data = templatefile("${path.module}/scripts/install_worker.sh", {
@@ -99,6 +104,7 @@ resource "aws_instance" "producer" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.producer.id]
 
   user_data = templatefile("${path.module}/scripts/install_producer.sh", {
@@ -114,6 +120,7 @@ resource "aws_instance" "loadbalancer" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
+  subnet_id     = var.subnet_id 
   vpc_security_group_ids = [aws_security_group.lb.id]
 
   user_data = templatefile("${path.module}/scripts/install_loadbalancer.sh", {

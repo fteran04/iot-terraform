@@ -1,6 +1,7 @@
 # ─── Security Group: Load Balancer ───────────────────────────────────────────
 resource "aws_security_group" "lb" {
   name        = "sg_loadbalancer"
+  vpc_id = var.vpc_id 
   description = "Allow HTTP traffic to the load balancer"
 
   ingress {
@@ -32,6 +33,7 @@ resource "aws_security_group" "lb" {
 # ─── Security Group: API instances ───────────────────────────────────────────
 resource "aws_security_group" "api" {
   name        = "sg_api"
+  vpc_id = var.vpc_id 
   description = "Allow traffic from load balancer and SSH"
 
   ingress {
@@ -63,6 +65,7 @@ resource "aws_security_group" "api" {
 # ─── Security Group: PostgreSQL ───────────────────────────────────────────────
 resource "aws_security_group" "postgres" {
   name        = "sg_postgres"
+  vpc_id = var.vpc_id 
   description = "Allow PostgreSQL access from API and worker"
 
   ingress {
@@ -102,6 +105,7 @@ resource "aws_security_group" "postgres" {
 # ─── Security Group: RabbitMQ ─────────────────────────────────────────────────
 resource "aws_security_group" "rabbitmq" {
   name        = "sg_rabbitmq"
+  vpc_id = var.vpc_id 
   description = "Allow RabbitMQ access from API and worker"
 
   ingress {
@@ -157,6 +161,7 @@ resource "aws_security_group" "rabbitmq" {
 # ─── Security Group: Worker ───────────────────────────────────────────────────
 resource "aws_security_group" "worker" {
   name        = "sg_worker"
+  vpc_id = var.vpc_id 
   description = "Allow SSH access to worker"
 
   ingress {
@@ -180,6 +185,7 @@ resource "aws_security_group" "worker" {
 # ─── Security Group: Producer ─────────────────────────────────────────────────
 resource "aws_security_group" "producer" {
   name        = "sg_producer"
+  vpc_id = var.vpc_id
   description = "Allow SSH access to producer"
 
   ingress {
