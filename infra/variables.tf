@@ -23,9 +23,9 @@ variable "subnet_id" {
 }
 
 variable "ami_id" {
-  description = "Ubuntu 24.04 LTS AMI ID (us-east-1)"
+  description = "Amazon Linux 2023 AMI ID (us-east-1)"
   type        = string
-  default = "ami-0f9fc25dd2506cf6d"
+  default     = "ami-0a59ec92177ec3fad"
 }
 
 variable "key_name" {

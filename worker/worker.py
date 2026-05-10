@@ -3,6 +3,7 @@ import json
 import time
 from db.database import get_session
 from db import crud
+import os
 
 def callback(ch, method, properties, body):
     data = json.loads(body)
