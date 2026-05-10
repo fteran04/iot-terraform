@@ -93,21 +93,11 @@ sudo docker logs load_balancer -f
 
 ## 8. Destruir la infraestructura
 
-```bash
+
 terraform destroy \
-  -var="key_name=mi-keypair" \
-  -var="dockerhub_username=TU_USUARIO"
-```
+
 
 ---
 
-## Notas importantes
-
-- **AMI**: El `ami_id` por defecto es Ubuntu 24.04 en `us-east-1`. Si usas otra región,
-  cámbialo en `variables.tf` o pásalo con `-var="ami_id=ami-XXXX"`.
-- **user_data**: Los scripts de instalación se ejecutan al arrancar la EC2.
-  Si una instancia falla, revisá `/var/log/cloud-init-output.log` dentro de la EC2.
-- **Orden de startup**: Terraform crea todo en paralelo pero los scripts de cada EC2
-  tienen loops de espera (`until curl...`) para que los servicios dependientes estén listos.
-- **Costos**: 7 instancias `t3.micro` entran dentro del free tier si tu cuenta es nueva.
-  Siempre corré `terraform destroy` cuando termines.
+# abrir swagger
+http://<ip_api_endpoint>/docs

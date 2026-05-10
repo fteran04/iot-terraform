@@ -68,6 +68,15 @@ resource "aws_security_group" "postgres" {
   vpc_id = var.vpc_id 
   description = "Allow PostgreSQL access from API and worker"
 
+  # conexión con gestor de base de datos
+  ingress {
+    description = "PostgreSQL acceso externo"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # -------------------------
   ingress {
     description     = "PostgreSQL from API"
     from_port       = 5432
