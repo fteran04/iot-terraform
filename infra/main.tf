@@ -1,4 +1,4 @@
-# ─── PostgreSQL EC2 ──────────────────────────────────────────────────────────
+### PostgreSQL EC2 ###
 resource "aws_instance" "postgres" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -15,7 +15,7 @@ resource "aws_instance" "postgres" {
   tags = { Name = "postgres-server" }
 }
 
-# ─── RabbitMQ EC2 ────────────────────────────────────────────────────────────
+### RabbitMQ EC2 ###
 resource "aws_instance" "rabbitmq" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -31,7 +31,7 @@ resource "aws_instance" "rabbitmq" {
   tags = { Name = "rabbitmq-server" }
 }
 
-# ─── API 1 EC2 ───────────────────────────────────────────────────────────────
+### API 1 EC2 ###
 resource "aws_instance" "api1" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -54,7 +54,7 @@ resource "aws_instance" "api1" {
   tags = { Name = "api1-server" }
 }
 
-# ─── API 2 EC2 ───────────────────────────────────────────────────────────────
+### API 2 EC2 ###
 resource "aws_instance" "api2" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -77,7 +77,7 @@ resource "aws_instance" "api2" {
   tags = { Name = "api2-server" }
 }
 
-# ─── Worker EC2 ──────────────────────────────────────────────────────────────
+### Worker EC2 ###
 resource "aws_instance" "worker" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -99,7 +99,7 @@ resource "aws_instance" "worker" {
   tags = { Name = "worker-server" }
 }
 
-# ─── Producer EC2 ────────────────────────────────────────────────────────────
+### Producer EC2 ###
 resource "aws_instance" "producer" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -115,7 +115,7 @@ resource "aws_instance" "producer" {
   tags = { Name = "producer-server" }
 }
 
-# ─── Load Balancer EC2 (HAProxy) ─────────────────────────────────────────────
+### Load Balancer EC2 (HAProxy) ###
 resource "aws_instance" "loadbalancer" {
   ami                    = var.ami_id
   instance_type          = var.instance_type

@@ -1,4 +1,4 @@
-# ─── Security Group: Load Balancer ───────────────────────────────────────────
+### Security Group: Load Balancer ###
 resource "aws_security_group" "lb" {
   name        = "sg_loadbalancer"
   vpc_id = var.vpc_id 
@@ -30,7 +30,7 @@ resource "aws_security_group" "lb" {
   tags = { Name = "sg_loadbalancer" }
 }
 
-# ─── Security Group: API instances ───────────────────────────────────────────
+### Security Group: API instances ###
 resource "aws_security_group" "api" {
   name        = "sg_api"
   vpc_id = var.vpc_id 
@@ -62,7 +62,7 @@ resource "aws_security_group" "api" {
   tags = { Name = "sg_api" }
 }
 
-# ─── Security Group: PostgreSQL ───────────────────────────────────────────────
+### Security Group: PostgreSQL ###
 resource "aws_security_group" "postgres" {
   name        = "sg_postgres"
   vpc_id = var.vpc_id 
@@ -111,7 +111,7 @@ resource "aws_security_group" "postgres" {
   tags = { Name = "sg_postgres" }
 }
 
-# ─── Security Group: RabbitMQ ─────────────────────────────────────────────────
+### Security Group: RabbitMQ ###
 resource "aws_security_group" "rabbitmq" {
   name        = "sg_rabbitmq"
   vpc_id = var.vpc_id 
@@ -167,7 +167,7 @@ resource "aws_security_group" "rabbitmq" {
   tags = { Name = "sg_rabbitmq" }
 }
 
-# ─── Security Group: Worker ───────────────────────────────────────────────────
+### Security Group: Worker ###
 resource "aws_security_group" "worker" {
   name        = "sg_worker"
   vpc_id = var.vpc_id 
@@ -191,7 +191,7 @@ resource "aws_security_group" "worker" {
   tags = { Name = "sg_worker" }
 }
 
-# ─── Security Group: Producer ─────────────────────────────────────────────────
+### Security Group: Producer ###
 resource "aws_security_group" "producer" {
   name        = "sg_producer"
   vpc_id = var.vpc_id
