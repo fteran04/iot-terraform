@@ -28,12 +28,12 @@ def get_db():
     finally:
         db.close()
 
-# ______ lb__________
+### lb ###
 @app.get("/debug")
 def debug():
     return {"container": socket.gethostname()}
 
-# ─── ENDPOINTS ─────────────────────────────────────────
+### ENDPOINTS ###
 
 # GET - Obtener todos los usuarios
 @app.get("/tareas", response_model=list[TaskResponse])

@@ -12,13 +12,12 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 SessionLocal = sessionmaker(bind=engine)
 
-
+# Crea la tabla 'tareas' si no existe
 def init_db():
-    """Crea la tabla 'tareas' si no existe."""
+    
     Base.metadata.create_all(engine)
     print("Base de datos inicializada.")
 
-
+# Retorna una sesión lista para usar
 def get_session() -> Session:
-    """Retorna una sesión lista para usar."""
     return SessionLocal()
